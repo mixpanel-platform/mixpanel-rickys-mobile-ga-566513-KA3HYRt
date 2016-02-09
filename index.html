@@ -19,20 +19,6 @@
         margin-right: 8px;
         display: inline-block;
       }
-      #event_list {
-        display: inline-block;
-      }
-      #add {
-      	background: url(https://cdn.mxpnl.com/cache/db85795727e3c42d2865a215cd85876a/images/reports/funnels3/new_row_spritesheet.png);
-      	width: 30px;
-      	height: 30px;
-      	cursor: pointer;
-      	position: relative;
-      	margin-left: 15px;
-      }
-      input.search-box {
-        height: 31px;
-      }
       .date_select.inline.block, .event_select.inline.block, .right-arrow, #add {
         display: inline-block;
         vertical-align: middle;
@@ -41,6 +27,9 @@
         max-width: 200px;
         margin: 10px 0;
       }
+      .dates {
+        margin-bottom: 20px;
+      }
       .right-arrow {
       	background: url(//cdn.mxpnl.com/cache/0a836ac387413f8cfa0ac97c5618c8bf/images/reports/arrow-dropshadow.png) no-repeat;
       	background-position: 0 0;
@@ -48,8 +37,13 @@
       	width: 10px;
       	margin: 10px;
       }
-      .dates {
-        margin-bottom: 20px;
+      #add {
+      	background: url(https://cdn.mxpnl.com/cache/db85795727e3c42d2865a215cd85876a/images/reports/funnels3/new_row_spritesheet.png);
+      	width: 30px;
+      	height: 30px;
+      	cursor: pointer;
+      	position: relative;
+      	margin-left: 15px;
       }
       #run, #funnel-query, .alert-ok {
         clear:both;
@@ -77,27 +71,7 @@
       #events {
         margin: 10px 0;
       }
-      input {
-        font-family:  system, -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", sans-serif;
-        font-weight: normal;
-        letter-spacing: 0.03em;
-        font-size: 13px;
-        color: #747d94;
-        height: 20px;
-        width: 355px;
-        margin: 0 0 10px 0;
-        padding: 5px;
-        border: 1px solid #bdc7d2;
-        -webkit-border-radius: 3px;
-        border-radius: 3px;
-        position: relative;
-        -webkit-appearance: textfield;
-        background-color: white;
-      }
-      input:focus, input:hover {
-        outline: 0;
-        border-color: #5ba7e1;
-      }
+      
       #report {
         margin: 20px 0 55px;
         display: none;
@@ -326,6 +300,13 @@
         }
         var eventSelect = $('<div class="event_select inline block" id="' + i + '"></div>').insertBefore($add).MPEventSelect();
       }
+      function resetEvents() {
+        // clear event dropdowns
+        $('.event_select').remove();
+        $('.right-arrow').remove();
+        addEvent(0);
+      }
+
       $(document).ready(function() {
         addEvent(0);
       });
@@ -333,7 +314,17 @@
         var numEvents = $('.event_select').length;
         addEvent(numEvents);
       });
-
+      
+      // error alerts
+      function error(message) {
+        var alert = $('<div class="alert"><div class="alert-title">Error</div><div class="alert-content">' + message + '</div><div class="alert-ok">OK</div></div>');
+        alert.appendTo('body').fadeIn(200);
+      }
+      // close alerts
+      $('body').on('click', '.alert-ok', function() {
+          $('.alert').remove();
+      });
+      
       // runQuery
       $('#dates').on('change', function() {
         runQuery();
@@ -341,7 +332,6 @@
       $('#run').on('click', function() {
         var events = [];
         for (var i = 0, j = $('.event_select').length; i < j; i++) {
-          console.log($($('.event_select')[i]).val())
           events.push($($('.event_select')[i]).val());
         }
         event_list = events;
@@ -349,7 +339,7 @@
       });
       $('#funnel-query').on('click', function() {
         var newEvents = [];
-
+        
         var root = d3.selectAll(".root");
         root.each(function(d,i) {
           var index = d.name.indexOf(':');
@@ -363,24 +353,7 @@
           }
         });
       });
-      
-      function resetEvents() {
-        // clear event dropdowns
-        $('.event_select').remove();
-        $('.right-arrow').remove();
-        addEvent(0);
-      }
 
-      function error(message) {
-        var alert = $('<div class="alert"><div class="alert-title">Error</div><div class="alert-content">' + message + '</div><div class="alert-ok">OK</div></div>');
-        alert.appendTo('body').fadeIn(200);
-      }
-      // close alerts
-      $('body').on('click', '.alert-ok', function() {
-          $('.alert').remove();
-      });
-
-      // custom query
       function runQuery() {
         // clear previous query
         $('#funnel').html('');
@@ -701,7 +674,7 @@
     
     <script type="text/cq" id="cq">
       var EVENT_LIST = params.event_list;
-      var PATH_LENGTH =  params.path_length || 4;
+      var PATH_LENGTH =  params.path_length || 3;
       
       function main() {
           return Events({
