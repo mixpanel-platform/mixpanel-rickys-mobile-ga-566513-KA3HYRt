@@ -309,43 +309,39 @@
       </div>
     </div>
     <script>
-      var event_list = []; // = $('#event_list').val().split(',');
+      var event_list = [];
       var path_length = 3;
       var funnel_select = [];
       
-      $(document).ready(function() {
-        $('.event_select').MPEventSelect();
-      });
-      
+      // add events
       var $events = $('#events');
       var $add = $('#events').find('#add');
       
-      function addEvent(i, eventName) {
+      function addEvent(i) {
         if (i > 0) {
           $('<div class="right-arrow"></div>').insertBefore($add);
         }
         var eventSelect = $('<div class="event_select inline block" id="' + i + '"></div>').insertBefore($add).MPEventSelect();
-        
-        if (eventName) {
-          setTimeout(function() {
-            $('#' + i).val(eventName);
-          }, 2000);
-        }
       }
-      
+      $(document).ready(function() {
+        addEvent(0);
+      });
       $('#add').on('click', function() {
         var numEvents = $('.event_select').length;
         addEvent(numEvents);
       });
 
       // runQuery
-      $(document).ready(function() {
-        addEvent(0);
-      })
       $('#dates').on('change', function() {
         runQuery();
       });
       $('#run').on('click', function() {
+        var events = [];
+        for (var i = 0, j = $('.event_select').length; i < j; i++) {
+          console.log($($('.event_select')[i]).val())
+          events.push($($('.event_select')[i]).val());
+        }
+        event_list = events;
         runQuery();
       });
       $('#funnel-query').on('click', function() {
@@ -358,23 +354,18 @@
 
           var result = getFlowSteps(d, newEvents);
           if (result != 'error' && result != undefined) {
-            resetEvents(newEvents);
+            resetEvents();
+            event_list = newEvents;
+            runQuery();
           }
         });
       });
       
-      function resetEvents(newEvents) {
+      function resetEvents() {
         // clear event dropdowns
         $('.event_select').remove();
-        $('.right_arrow').remove();
-
-        // add new events
-        for (var i = 0, j = newEvents.length; i < j; i++) {
-          addEvent(i, newEvents[i]);
-        }
-        setTimeout(function() {
-          runQuery();
-        }, 1000)
+        $('.right-arrow').remove();
+        addEvent(0);
       }
 
       function error(message) {
@@ -391,20 +382,14 @@
         // clear previous query
         $('#funnel').html('');
         $('.flow').hide();
-        event_list = [];
 
-        // set up parameters
-        for (var i = 0, j = $('.event_select').length; i < j; i++) {
-          console.log($($('.event_select')[i]).val())
-          event_list.push($($('.event_select')[i]).val());
-        }
         if (event_list.length < 2) {
           error('Must have more than one event in a funnel. Events can be selected or deselected by clicking on the event name or applicable node.');
           return;
         }
-        
+
+        // set up parameters
         var dateVal = $('#dates').val();
-        console.log(event_list)
         var queryParams = {
             event_list: event_list,
             path_length: path_length,
