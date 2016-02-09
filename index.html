@@ -332,7 +332,10 @@
       $('#run').on('click', function() {
         var events = [];
         for (var i = 0, j = $('.event_select').length; i < j; i++) {
-          events.push($($('.event_select')[i]).val());
+          var eventName = $($('.event_select')[i]).val();
+          if (eventName != null) {
+            events.push(eventName);
+          }
         }
         event_list = events;
         runQuery();
@@ -360,7 +363,7 @@
         $('.flow').hide();
 
         if (event_list.length < 2) {
-          error('Must have more than one event in a funnel. Events can be selected or deselected by clicking on the event name or applicable node.');
+          error('Must have more than one event in a funnel. Ensure there are multiple events selected in your dropdowns. In a flow, events can be selected or deselected by clicking on the event name or applicable node.');
           return;
         }
 
