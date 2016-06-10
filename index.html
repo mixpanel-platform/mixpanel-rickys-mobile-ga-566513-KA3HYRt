@@ -378,7 +378,7 @@
         var script = $('#cq').html();
         script = $.trim(script);
         
-        MP.api.custom_query(script, queryParams).done(function(results) {
+        MP.api.jql(script, queryParams).done(function(results) {
           cqResult = results[0];
           for (var i = 0; i < event_list.length; i++) {
             var first = i == 0 ? true : false;
